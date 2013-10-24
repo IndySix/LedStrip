@@ -11,7 +11,7 @@ Leds::Leds(const int ledsCount, const int sensorCount, const int ledsRedPins[], 
   Serial.begin(9600);
   
   
-  const int temp = 16;
+  leds = ledsCount;
   
   sensors = sensorCount;
   Serial.print("Leds: ");
