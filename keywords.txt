@@ -1,0 +1,19 @@
+#######################################
+# Syntax Coloring Map For Leds
+#######################################
+
+#######################################
+# Class (KEYWORD3)
+#######################################
+
+Leds	KEYWORD3
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+init	KEYWORD2
+ledsLightSensors	KEYWORD2
+calibrateSensors	KEYWORD2
+startGrind	KEYWORD2
+setLed	KEYWORD2
