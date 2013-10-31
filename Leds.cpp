@@ -137,6 +137,6 @@ void Leds::calibrateSensors(){
 }
 
 void Leds::startGrind(int timestamp){
-  grindStart = timeStamp;
+  grindStart = timestamp;
   grinding = true;
 }
