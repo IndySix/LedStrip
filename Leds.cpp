@@ -9,7 +9,7 @@
 // Constructor
 Leds::Leds(){}
 
-void Leds::init(const int ledsCount, const int ledSeparation, const int sensorCount, const int ledsRedPins[], const int ledsGreenPins[], const int sensorPins[]){
+void Leds::init(const int ledsCount, const int ledSeparation, const int sensorCount, const int ledsRedPins[], const int ledsGreenPins[], const int sensorPins[], const float sensorTreshold){
 //  Serial.print(" -Leds: ");
 //  Serial.println(ledsCount);
 //
@@ -54,9 +54,10 @@ void Leds::init(const int ledsCount, const int ledSeparation, const int sensorCo
   lastActivated = -1;
   ledOnTime     = {-1, -1, -1, -1, -1, -1, -1, -1};
 
-  leds        = ledsCount;
-  sensors     = sensorCount;
-  ledDistance = ledSeparation;
+  leds               = ledsCount;
+  sensors            = sensorCount;
+  ledDistance        = ledSeparation;
+  tresholdMultiplier = sensorTreshold;
 
 //  Serial.println(" -Initialization Done");
 }
@@ -165,7 +166,7 @@ void Leds::calibrateSensors(){
   }
 //  Serial.print(" -");
   for (int i = 0; i < sensors; i++){
-    ledStartupValue[i] = (ledStartupValue[i] / sensors) * 0.9;
+    ledStartupValue[i] = (ledStartupValue[i] / sensors) * tresholdMultiplier;
 //    Serial.print(ledStartupValue[i]);
 //    Serial.print(" ");
   }
