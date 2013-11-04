@@ -10,7 +10,7 @@
 class Leds{
   public:
     Leds();
-    void init(const int ledsCount, const int sensorCount, const int ledsRedPins[], const int ledsGreenPins[], const int sensorPins[]);
+    void init(const int ledsCount, const int ledSeparation, const int sensorCount, const int ledsRedPins[], const int ledsGreenPins[], const int sensorPins[]);
     void ledsLightSensors();
     void calibrateSensors();
     void startGrind(int timestamp);
@@ -30,6 +30,7 @@ class Leds{
     int lastActivated;
     int ledDelay;
     int grindStart;
+    int ledDistance;
     
     boolean grinding;
 };
