@@ -90,6 +90,7 @@ void Leds::ledsLightSensors(){
       if(i == lastActivated){
         lastActivated = -1;
         
+        // Output
         int firstLed = -1;
         int lastLed = -1;
         int firstLedTime = -1;
@@ -124,6 +125,7 @@ void Leds::ledsLightSensors(){
                    ", \"duration\":" + (String) duration +
                    ", \"percentage\":" + (String) percentage;
         Serial.println(jsonOut + "}");
+        // End Output
         
       }
     }
@@ -133,42 +135,50 @@ void Leds::ledsLightSensors(){
 }
 
 void Leds::setLed(int n, char value){
-//    Serial.print("Setting led ");
-//    Serial.print(n);
-//    Serial.print(" to '");
-//    Serial.print(value);
-//    Serial.print("' on pins ");
-//    Serial.print(lG[n]);
-//    Serial.print(" & ");
-//    Serial.println(lR[n]);
-
-  if(value == 'x'){
-    digitalWrite(lG[n], LOW);
-    digitalWrite(lR[n], LOW);
-  }
-  else if(value == 'r'){
-    digitalWrite(lG[n], LOW);
-    digitalWrite(lR[n], HIGH);
-  }
-  else if(value == 'g'){
-    digitalWrite(lG[n], HIGH);
-    digitalWrite(lR[n], LOW);
+//    Serial.println("Setting led " + (String) n " to '" (String) value "' on pins " (String) lG[n] " & " (String) lR[n]);
+  switch(value){
+    case 'x':
+      digitalWrite(lG[n], LOW);
+      digitalWrite(lR[n], LOW);
+    break;
+    case 'r':
+      digitalWrite(lG[n], LOW);
+      digitalWrite(lR[n], HIGH);
+    break;
+    case 'g':
+      digitalWrite(lG[n], HIGH);
+      digitalWrite(lR[n], LOW);
+    break;
   }
 }
 
 void Leds::calibrateSensors(){
 //  Serial.println(" -Calibrating led sensors:");
   delay(500);
+  int counter = 0;
   for (int j = 0; j < sensors; j++){
+    delay(500);
     for (int i = 0; i < sensors; i++){
       ledStartupValue[i] += analogRead(lS[i]);
     }
+    for (int i = 0; i < leds; i++)  {
+      setLed(i, ((counter + i) % 3 == 0) ? 'g' : 'r');
+    }
+    counter++;
   }
 //  Serial.print(" -");
   for (int i = 0; i < sensors; i++){
     ledStartupValue[i] = (ledStartupValue[i] / sensors) * tresholdMultiplier;
 //    Serial.print(ledStartupValue[i]);
 //    Serial.print(" ");
+  }
+  
+  
+  for (int j = 0; j < leds; j++)  {
+    for (int i = 0; i < leds; i++)  {
+      setLed(i, (j % 2 == 0) ? 'g' : 'r');
+    }
+    delay(50);
   }
 //  Serial.println("");
 }
