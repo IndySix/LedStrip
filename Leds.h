@@ -9,7 +9,7 @@
 
 class Leds{
   public:
-    Leds();
+    Leds(int clock, int dataOut, int dataIn, int chipSelect);
     void init(const int ledsCount, const int ledSeparation, const int sensorCount, const int ledsRedPins[], const int ledsGreenPins[], const int sensorPins[], const float sensorTreshold);
     void ledsLightSensors();
     void calibrateSensors();
@@ -19,6 +19,8 @@ class Leds{
     boolean logging;
     
     void setLed(int n, char value);
+    int getSensorValue(int sensorID);
+    int readAdc(int adcnum, int clockpin, int mosipin, int misopin, int cspin);
     
     int lG[16];
     int lR[16];
@@ -32,6 +34,11 @@ class Leds{
     int grindStart;
     int ledDistance;
     float tresholdMultiplier;
+    
+    int SPICLK;  // Orange
+    int SPIMISO; // Yellow
+    int SPIMOSI; // Blue
+    int SPICS;   // Brown
     
     boolean grinding;
 };

@@ -1,13 +1,21 @@
 /*
   Leds.cpp - Library for flashing LedStrip code.
- Created by Michiel Dommerholt, 16 Oktober 2013.
- */
+  Created by Michiel Dommerholt, 16 Oktober 2013.
+*/
 
 #include "Arduino.h"
 #include "Leds.h"
+#include "ADConverter.h"
+
+ADConverter adc;
 
 // Constructor
-Leds::Leds(){}
+Leds::Leds(int clock, int dataOut, int dataIn, int chipSelect){
+  SPICLK = clock;     // Orange
+  SPIMISO = dataOut;  // Yellow
+  SPIMOSI = dataIn;   // Blue
+  SPICS = chipSelect; // Brown
+}
 
 void Leds::init(const int ledsCount, const int ledSeparation, const int sensorCount, const int ledsRedPins[], const int ledsGreenPins[], const int sensorPins[], const float sensorTreshold){
 //  Serial.print(" -Leds: ");
@@ -40,14 +48,19 @@ void Leds::init(const int ledsCount, const int ledSeparation, const int sensorCo
 //  String sensorAddresses = " -   {";
   for (int i = 0; i < sensorCount; i++){
     lS[i] = sensorPins[i];
-    pinMode(lS[i], INPUT);
-
+//    pinMode(lS[i], INPUT);
+//
 //    sensorAddresses += lS[i];
 //    if(i < sensorCount - 1){
 //      sensorAddresses += ", ";
 //    }
   }
 //  Serial.println(sensorAddresses + "}");
+
+  pinMode(SPIMOSI, OUTPUT);
+  pinMode(SPIMISO, INPUT);
+  pinMode(SPICLK, OUTPUT);
+  pinMode(SPICS, OUTPUT);
 //
 //  Serial.println(" -Setting default values.");
   ledDelay      = 5 * 1000;
@@ -67,8 +80,8 @@ void Leds::ledsLightSensors(){
 //  Serial.print(activatedLed);
 //  Serial.print(" ");
   for (int i = 0; i < sensors; i++)  {
-    int value = analogRead(lS[i]);
-//    Serial.print(analogRead(lS[i]));
+    int value = getSensorValue(i);
+//    Serial.print(getSensorValue(i));
 //    Serial.print("(");
 //    Serial.print(ledStartupValue[i]);
 //    Serial.print(") ");
@@ -126,7 +139,6 @@ void Leds::ledsLightSensors(){
                    ", \"percentage\":" + (String) percentage;
         Serial.println(jsonOut + "}");
         // End Output
-        
       }
     }
   }
@@ -159,7 +171,7 @@ void Leds::calibrateSensors(){
   for (int j = 0; j < sensors; j++){
     delay(500);
     for (int i = 0; i < sensors; i++){
-      ledStartupValue[i] += analogRead(lS[i]);
+      ledStartupValue[i] += getSensorValue(i);
     }
     for (int i = 0; i < leds; i++)  {
       setLed(i, ((counter + i) % 3 == 0) ? 'g' : 'r');
@@ -173,7 +185,6 @@ void Leds::calibrateSensors(){
 //    Serial.print(" ");
   }
   
-  
   for (int j = 0; j < leds; j++)  {
     for (int i = 0; i < leds; i++)  {
       setLed(i, (j % 2 == 0) ? 'g' : 'r');
@@ -186,4 +197,8 @@ void Leds::calibrateSensors(){
 void Leds::startGrind(int timestamp){
   grindStart = timestamp;
   grinding = true;
+}
+
+int Leds::getSensorValue(int sensorID){
+  return adc.readAdc(sensorID, SPICLK, SPIMOSI, SPIMISO, SPICS);
 }
