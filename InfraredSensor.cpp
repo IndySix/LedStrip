@@ -6,7 +6,6 @@
 #include "Arduino.h"
 #include "InfraredSensor.h"
 
-
 InfraredSensor::InfraredSensor(int pin, String sensorDescription, int minTriggers, int triggerDelay, double sensitivity){
   sensorPin             = pin;
   minimumTriggers       = minTriggers;  // Minimal amount of triggers required to activate

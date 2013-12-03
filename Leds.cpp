@@ -96,6 +96,7 @@ void Leds::ledsLightSensors(){
 //      Serial.print(value);
 //      Serial.print(" Tresold: ");
 //      Serial.println(ledStartupValue[i]);
+      Serial.println('T'); // Trigger "Led enabled" sound.
     }
     if(ledOnTime[i] != -1 && ledOnTime[i] + ledDelay < millis()){
       setLed(i*2, 'r');
@@ -108,7 +109,7 @@ void Leds::ledsLightSensors(){
         int lastLed = -1;
         int firstLedTime = -1;
         int lastLedTime = -1;
-        String jsonOut = "{";
+        String jsonOut = "F{";
         
         String ledTimes = "[";
         for (int j = 0; j < sensors; j++){
