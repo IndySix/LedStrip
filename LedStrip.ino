@@ -11,12 +11,16 @@ const float sensorTreshold             = 0.6;                                   
 int         infraredMinimumTriggers    = 10;
 double      infraredSensitivity        = 0.9;
 int         infraredAfterTriggerDelay  = 1000;
+String      descriptionLeft            = "Left";
+String      descriptionRight           = "Right";
 
 Leds ledStrip(2, 3, 4, 5);
-InfraredSensor sensorLeft( A1, "Left",  infraredMinimumTriggers, infraredAfterTriggerDelay, infraredSensitivity);
-InfraredSensor sensorRight(A0, "Right", infraredMinimumTriggers, infraredAfterTriggerDelay, infraredSensitivity);
+InfraredSensor sensorLeft( A1, descriptionLeft,  infraredMinimumTriggers, infraredAfterTriggerDelay, infraredSensitivity);
+InfraredSensor sensorRight(A0, descriptionRight, infraredMinimumTriggers, infraredAfterTriggerDelay, infraredSensitivity);
 
 int counter = 0;
+String left[2];
+String right[2];
 
 void setup(){
   Serial.begin(9600);
@@ -28,15 +32,26 @@ void setup(){
   ledStrip.init(ledsCount, ledSeparation, sensorCount, ledsRedPins, ledsGreenPins, lightSensors, sensorTreshold);
   ledStrip.calibrateSensors();
   Serial.println('C'); // Trigger "Calibration done" sound.
-  ledStrip.startGrind(1337);
 }
 
 void loop(){
-  ledStrip.ledsLightSensors();
-//  Serial.print(sensorLeft.tick());
-//  Serial.print(" : ");
-//  Serial.println(sensorRight.tick());
-  sensorLeft.tick();
-  sensorRight.tick();
+  if(!ledStrip.ledsLightSensors()){
+//    Serial.print(sensorLeft.tick());
+//    Serial.print(" : ");
+//    Serial.println(sensorRight.tick());
+    left[0] = "null";
+    left[1] = "-1";
+    right[0] = "null";
+    right[1] = "-1";
+
+    sensorLeft.tick(left);
+    sensorRight.tick(right);
+    if(left[0] == descriptionLeft){
+      ledStrip.startGrind(false, millis(), left[1]);
+    }
+    if(right[0] == descriptionRight){
+      ledStrip.startGrind(true, millis(), right[1]);
+    }
+  }
   delay(1);
 }

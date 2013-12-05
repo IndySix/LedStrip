@@ -11,9 +11,9 @@ class Leds{
   public:
     Leds(int clock, int dataOut, int dataIn, int chipSelect);
     void init(const int ledsCount, const int ledSeparation, const int sensorCount, const int ledsRedPins[], const int ledsGreenPins[], const int sensorPins[], const float sensorTreshold);
-    void ledsLightSensors();
+    boolean ledsLightSensors();
     void calibrateSensors();
-    void startGrind(int timestamp);
+    void startGrind(boolean grindPositive, int startTime, String& startDistance);
     
   private:
     boolean logging;
@@ -31,7 +31,6 @@ class Leds{
     int sensors;
     int lastActivated;
     int ledDelay;
-    int grindStart;
     int ledDistance;
     float tresholdMultiplier;
     
@@ -41,6 +40,9 @@ class Leds{
     int SPICS;   // Brown
     
     boolean grinding;
+    boolean grindDirection;
+    int grindStartTime;
+    String grindStartDistance;
 };
 
 #endif

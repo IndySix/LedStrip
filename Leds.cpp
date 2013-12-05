@@ -61,11 +61,12 @@ void Leds::init(const int ledsCount, const int ledSeparation, const int sensorCo
   pinMode(SPIMISO, INPUT);
   pinMode(SPICLK, OUTPUT);
   pinMode(SPICS, OUTPUT);
-//
+
 //  Serial.println(" -Setting default values.");
   ledDelay      = 5 * 1000;
   lastActivated = -1;
-  ledOnTime     = {-1, -1, -1, -1, -1, -1, -1, -1};
+  ledOnTime     = {
+    -1, -1, -1, -1, -1, -1, -1, -1  };
 
   leds               = ledsCount;
   sensors            = sensorCount;
@@ -75,7 +76,7 @@ void Leds::init(const int ledsCount, const int ledSeparation, const int sensorCo
 //  Serial.println(" -Initialization Done");
 }
 
-void Leds::ledsLightSensors(){
+boolean Leds::ledsLightSensors(){
 //  Serial.print(" -Light Sensor. Values: ");
 //  Serial.print(activatedLed);
 //  Serial.print(" ");
@@ -85,7 +86,12 @@ void Leds::ledsLightSensors(){
 //    Serial.print("(");
 //    Serial.print(ledStartupValue[i]);
 //    Serial.print(") ");
-    if(grinding && ledOnTime[i] == -1 && value < ledStartupValue[i] && i > lastActivated){
+    if( grinding &&
+        ledOnTime[i] == -1 &&
+        value < ledStartupValue[i] &&
+        ((grindDirection == i > lastActivated) ||
+         lastActivated == -1)
+      ){
       setLed(i*2, 'g');
       setLed(i*2+1, 'g');
       ledOnTime[i] = millis();
@@ -103,17 +109,17 @@ void Leds::ledsLightSensors(){
       setLed(i*2+1, 'r');
       if(i == lastActivated){
         lastActivated = -1;
-        
+
         // Output
         int firstLed = -1;
         int lastLed = -1;
         int firstLedTime = -1;
         int lastLedTime = -1;
         String jsonOut = "F{";
-        
+
         String ledTimes = "[";
         for (int j = 0; j < sensors; j++){
-          ledTimes += ledOnTime[j];
+          ledTimes += (ledOnTime[j] == -1 ? "-1" : (String)(ledOnTime[j] - grindStartTime));
           if(ledOnTime[j] != -1){
             if(firstLed == -1){
               firstLed = j;
@@ -122,45 +128,52 @@ void Leds::ledsLightSensors(){
             lastLed = j;
             lastLedTime = ledOnTime[j];
           }
-          
+
           ledOnTime[j] = -1;
           if(j < sensors - 1){
             ledTimes += ", ";
           }
         }
         ledTimes += "]";
-        
+
         int distance = (lastLed - firstLed) * ledDistance;
-        int duration = lastLedTime - firstLedTime;
+        int duration = abs(lastLedTime - firstLedTime);
         float percentage = ((float)(lastLed - firstLed + 1) / (float) sensors) * 100.0;
+
+        jsonOut +=
+           "\"leds\":"            +          ledTimes                            +
+          ", \"distance\":"       + (String) distance                            +
+          ", \"duration\":"       + (String) duration                            +
+          ", \"percentage\":"     + (String) percentage                          +
+          ", \"direction\":"      + (String) (grindDirection ? "Right" : "Left") +
+          ", \"startDistance\":"  + (String) grindStartDistance                  ;
           
-        jsonOut += "\"leds\":" + ledTimes +
-                   ", \"distance\":" + (String) distance +
-                   ", \"duration\":" + (String) duration +
-                   ", \"percentage\":" + (String) percentage;
         Serial.println(jsonOut + "}");
         // End Output
+        
+        grinding = false;
       }
     }
   }
-  //  Serial.println("");
+//  Serial.println("");
+  return grinding;
   delay(1);
 }
 
 void Leds::setLed(int n, char value){
 //    Serial.println("Setting led " + (String) n " to '" (String) value "' on pins " (String) lG[n] " & " (String) lR[n]);
   switch(value){
-    case 'x':
-      digitalWrite(lG[n], LOW);
-      digitalWrite(lR[n], LOW);
+  case 'x':
+    digitalWrite(lG[n], LOW);
+    digitalWrite(lR[n], LOW);
     break;
-    case 'r':
-      digitalWrite(lG[n], LOW);
-      digitalWrite(lR[n], HIGH);
+  case 'r':
+    digitalWrite(lG[n], LOW);
+    digitalWrite(lR[n], HIGH);
     break;
-    case 'g':
-      digitalWrite(lG[n], HIGH);
-      digitalWrite(lR[n], LOW);
+  case 'g':
+    digitalWrite(lG[n], HIGH);
+    digitalWrite(lR[n], LOW);
     break;
   }
 }
@@ -185,7 +198,7 @@ void Leds::calibrateSensors(){
 //    Serial.print(ledStartupValue[i]);
 //    Serial.print(" ");
   }
-  
+
   for (int j = 0; j < leds; j++)  {
     for (int i = 0; i < leds; i++)  {
       setLed(i, (j % 2 == 0) ? 'g' : 'r');
@@ -195,11 +208,16 @@ void Leds::calibrateSensors(){
 //  Serial.println("");
 }
 
-void Leds::startGrind(int timestamp){
-  grindStart = timestamp;
-  grinding = true;
+void Leds::startGrind(boolean grindPositive, int startTime, String& startDistance){
+  if(!grinding){
+    grinding           = true;
+    grindDirection     = grindPositive;
+    grindStartTime     = startTime;
+    grindStartDistance = (String)startDistance;
+  }
 }
 
 int Leds::getSensorValue(int sensorID){
   return adc.readAdc(sensorID, SPICLK, SPIMOSI, SPIMISO, SPICS);
 }
+

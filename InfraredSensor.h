@@ -11,7 +11,7 @@
 class InfraredSensor{
   public:
     InfraredSensor(int pin, String sensorDescription, int minTriggers, int triggerDelay, double sensitivity);
-    String tick();
+    void tick(String *output);
     void init();
     
   private:

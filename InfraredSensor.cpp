@@ -35,9 +35,9 @@ int InfraredSensor::getValue(){
   return analogRead(sensorPin);
 }
 
-String InfraredSensor::tick(){
+void InfraredSensor::tick(String *output){
   int distance = getValue();
-
+      
   total -= readings[ind];
   readings[ind] = distance;
   total += readings[ind];  
@@ -50,22 +50,24 @@ String InfraredSensor::tick(){
   if (average > treshold){
     triggerCount++;
     if(triggerCount >= minimumTriggers && triggerTime + afterTriggerDelay < millis()){
-      Serial.print("Sensor: ");
-      Serial.print(description);
-      Serial.print(". Distance: ");
-      Serial.print(distance);
-      Serial.print(" Average: ");
-      Serial.print(average);
-      Serial.print(" Treshold: ");
-      Serial.print(treshold);
-      Serial.print(" Time: ");
-      Serial.println(millis());
+//      Serial.print("Sensor: ");
+//      Serial.print(description);
+//      Serial.print(". Distance: ");
+//      Serial.print(distance);
+//      Serial.print(" Average: ");
+//      Serial.print(average);
+//      Serial.print(" Treshold: ");
+//      Serial.print(treshold);
+//      Serial.print(" Time: ");
+//      Serial.println(millis());
+      Serial.println("A"); // Signal "Grind Activated"
       triggerCount = 0;
       triggerTime = millis();
+      output[0] = description;
+      output[1] = (String)average;
     }
   }else{
     triggerCount = 0;
   }
-  return (String)average;
 }
 
