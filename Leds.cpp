@@ -10,12 +10,7 @@
 ADConverter adc;
 
 // Constructor
-Leds::Leds(int clock, int dataOut, int dataIn, int chipSelect){
-  SPICLK = clock;     // Orange
-  SPIMISO = dataOut;  // Yellow
-  SPIMOSI = dataIn;   // Blue
-  SPICS = chipSelect; // Brown
-}
+Leds::Leds(){}
 
 void Leds::init(const int ledsCount, const int ledSeparation, const int sensorCount, const int ledsRedPins[], const int ledsGreenPins[], const int sensorPins[], const float sensorTreshold){
 //  Serial.print(" -Leds: ");
@@ -48,6 +43,7 @@ void Leds::init(const int ledsCount, const int ledSeparation, const int sensorCo
 //  String sensorAddresses = " -   {";
   for (int i = 0; i < sensorCount; i++){
     lS[i] = sensorPins[i];
+    
 //    pinMode(lS[i], INPUT);
 //
 //    sensorAddresses += lS[i];
@@ -188,7 +184,7 @@ void Leds::calibrateSensors(){
       ledStartupValue[i] += getSensorValue(i);
     }
     for (int i = 0; i < leds; i++)  {
-      setLed(i, ((counter + i) % 3 == 0) ? 'g' : 'r');
+      setLed(i, ((counter - i) % 3 == 0) ? 'g' : 'r');
     }
     counter++;
   }
@@ -218,6 +214,14 @@ void Leds::startGrind(boolean grindPositive, int startTime, String& startDistanc
 }
 
 int Leds::getSensorValue(int sensorID){
-  return adc.readAdc(sensorID, SPICLK, SPIMOSI, SPIMISO, SPICS);
+  int chipNo = (int)(sensorID / 8) * 4;
+  int sensorAddress = sensorID % 8;
+  int clock      = lS[chipNo];
+  int dataOut    = lS[chipNo + 1];
+  int dataIn     = lS[chipNo + 2];
+  int chipSelect = lS[chipNo + 3];
+  Serial.print(sensorID + " " + chipNo + " " + sensorAddress);
+  
+  return adc.readAdc(sensorAddress, SPICLK, SPIMOSI, SPIMISO, SPICS);
 }
 

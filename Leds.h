@@ -9,7 +9,7 @@
 
 class Leds{
   public:
-    Leds(int clock, int dataOut, int dataIn, int chipSelect);
+    Leds();
     void init(const int ledsCount, const int ledSeparation, const int sensorCount, const int ledsRedPins[], const int ledsGreenPins[], const int sensorPins[], const float sensorTreshold);
     boolean ledsLightSensors();
     void calibrateSensors();

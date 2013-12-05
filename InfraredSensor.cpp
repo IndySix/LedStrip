@@ -60,11 +60,13 @@ void InfraredSensor::tick(String *output){
 //      Serial.print(treshold);
 //      Serial.print(" Time: ");
 //      Serial.println(millis());
+
+      float distance = 2000000*pow(average, -2.1835);
       Serial.println("A"); // Signal "Grind Activated"
       triggerCount = 0;
       triggerTime = millis();
       output[0] = description;
-      output[1] = (String)average;
+      output[1] = (String)distance;
     }
   }else{
     triggerCount = 0;
