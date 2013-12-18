@@ -46,5 +46,10 @@ int ADConverter::readAdc(int adcnum, int clockpin, int mosipin, int misopin, int
   digitalWrite(cspin, HIGH);
   
   adcout >>= 1;       // first bit is 'null' so drop it
+  
+//  Serial.print("Sensor: ");
+//  Serial.print(adcnum);
+//  Serial.print(". value: ");
+//  Serial.println(adcout);
   return adcout;
 }

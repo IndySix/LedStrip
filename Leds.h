@@ -10,7 +10,16 @@
 class Leds{
   public:
     Leds();
-    void init(const int ledsCount, const int ledSeparation, const int sensorCount, const int ledsRedPins[], const int ledsGreenPins[], const int sensorPins[], const float sensorTreshold);
+    void init(const int ledCountTop,
+              const int ledCountBottom,
+              const int ledSeparation,
+              const int sensorCount,
+              const int multiplexChips,
+              const int clockpins[],
+              const int mosipins[],
+              const int misopins[],
+              const int cspins[],
+              const float sensorTreshold);
     boolean ledsLightSensors();
     void calibrateSensors();
     void startGrind(boolean grindPositive, int startTime, String& startDistance);
@@ -20,24 +29,20 @@ class Leds{
     
     void setLed(int n, char value);
     int getSensorValue(int sensorID);
-    int readAdc(int adcnum, int clockpin, int mosipin, int misopin, int cspin);
     
-    int lG[16];
-    int lR[16];
-    int lS[8];
+    int clock[3];
+    int mosi[3];
+    int miso[3];
+    int cs[3];
     int ledStartupValue[16];
-    int ledOnTime[8];
-    int leds;
+    int ledOnTime[20];
+    int ledsTop;
+    int ledsBottom;
     int sensors;
     int lastActivated;
     int ledDelay;
     int ledDistance;
     float tresholdMultiplier;
-    
-    int SPICLK;  // Orange
-    int SPIMISO; // Yellow
-    int SPIMOSI; // Blue
-    int SPICS;   // Brown
     
     boolean grinding;
     boolean grindDirection;

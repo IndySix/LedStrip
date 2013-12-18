@@ -26,7 +26,6 @@ class InfraredSensor{
     int distance;
     int triggerCount;
     int treshold;
-    double sensitivityMultiplier;
     
     int numReadings;
     int readings[10];

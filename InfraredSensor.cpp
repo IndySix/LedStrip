@@ -7,14 +7,12 @@
 #include "InfraredSensor.h"
 
 InfraredSensor::InfraredSensor(int pin, String sensorDescription, int minTriggers, int triggerDelay, double sensitivity){
-  sensorPin             = pin;
-  minimumTriggers       = minTriggers;  // Minimal amount of triggers required to activate
-  afterTriggerDelay     = triggerDelay; // Delay after being triggered.
-  description           = sensorDescription;
-  sensitivityMultiplier = sensitivity;
-
-  distance        = 0;
-  triggerCount    = 0;
+  sensorPin         = pin;               // Sensor pin
+  minimumTriggers   = minTriggers;       // Minimal amount of triggers required to activate
+  afterTriggerDelay = triggerDelay;      // Delay after being triggered.
+  description       = sensorDescription; // Sensor name
+  distance          = 0;
+  triggerCount      = 0;
   
   numReadings = 10;
   for (int i = 0; i < numReadings; i++){
