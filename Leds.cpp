@@ -82,13 +82,11 @@ boolean Leds::ledsLightSensors(){
     
     // Debug output
     int value = getSensorValue(i);
-    output += (String)value + " (" + (String)ledStartupValue[i] + ") @" + (String)ledOnTime[i];
+    output += (String)value + "T" + (String)ledStartupValue[i] + "@" + (String)ledOnTime[i];
     if(value < 10){
-      output+=",   ";
-    }else if(value < 100){
-      output+=",  ";
-    }else{
       output+=", ";
+    }else{
+      output+=",";
     }
     
     // If the strip was activated by a infrared sensor &&
@@ -101,12 +99,12 @@ boolean Leds::ledsLightSensors(){
         // lastActivated == -1)
       ){
       // Set led i to green
-      setLed(i*2, 'g');
-      setLed(i*2+1, 'g');
+      //setLed(i*2, 'g');
+      //setLed(i*2+1, 'g');
       
       // Save the activation time of this sensor
       ledOnTime[i] = millis();
-      // save what sensor ID was alst activated.
+      // save what sensor ID was last activated.
       lastActivated = i;
       
       // Debug output
@@ -118,15 +116,19 @@ boolean Leds::ledsLightSensors(){
       Serial.println(ledStartupValue[i]);
       
       // Trigger "Led enabled" sound.
-      Serial.println('T');
+      Serial.print('T');
+      if(i < 10){
+        Serial.print('0');
+      }
+      Serial.println(i);
     }
     
     // If the current sensor has been activated &&
     //    the activation was longer than ledDelay ago.
     if(ledOnTime[i] != -1 && ledOnTime[i] + ledDelay < millis()){
       // Set the leds back to red.
-      setLed(i*2, 'r');
-      setLed(i*2+1, 'r');
+      //setLed(i*2, 'r');
+      //setLed(i*2+1, 'r');
       
       // If the current sensor was the last one to be activated.
       if(i == lastActivated){
@@ -260,13 +262,13 @@ void Leds::calibrateSensors(){
   }
 
   // "Calibration ready" flashing
-  for (int j = 0; j < sensors; j++)  {
+/*  for (int j = 0; j < sensors; j++)  {
     for (int i = 0; i < ledsTop+ledsBottom; i++)  {
       setLed(i, (j % 2 == 0) ? 'g' : 'r');
     }
     strip.show();
     delay(50);
-  }
+  }*/
   // Debug output
 //  Serial.println("");
 }

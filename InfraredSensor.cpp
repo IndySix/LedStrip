@@ -23,6 +23,7 @@ InfraredSensor::InfraredSensor(int pin, String sensorDescription, int minTrigger
 void InfraredSensor::init(){
   treshold = 0;
   for(int i = 0; i < 25; i++){
+    Serial.println(getValue());
     treshold += getValue();
     delay(10);
   }
@@ -48,16 +49,16 @@ void InfraredSensor::tick(String *output){
   if (average > treshold){
     triggerCount++;
     if(triggerCount >= minimumTriggers && triggerTime + afterTriggerDelay < millis()){
-//      Serial.print("Sensor: ");
-//      Serial.print(description);
-//      Serial.print(". Distance: ");
-//      Serial.print(distance);
-//      Serial.print(" Average: ");
-//      Serial.print(average);
-//      Serial.print(" Treshold: ");
-//      Serial.print(treshold);
-//      Serial.print(" Time: ");
-//      Serial.println(millis());
+      Serial.print("Sensor: ");
+      Serial.print(description);
+      Serial.print(". Distance: ");
+      Serial.print(distance);
+      Serial.print(" Average: ");
+      Serial.print(average);
+      Serial.print(" Treshold: ");
+      Serial.print(treshold);
+      Serial.print(" Time: ");
+      Serial.println(millis());
 
       float distance = 2000000*pow(average, -2.1835);
       Serial.println("A"); // Signal "Grind Activated"

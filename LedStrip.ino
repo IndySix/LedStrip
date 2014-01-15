@@ -8,7 +8,7 @@ const int   multiplexChips                   = 3;
 const int   clockpins[multiplexChips]        = {13, 9, 5};
 const int   misopins[multiplexChips]         = {12, 8, 4};
 const int   mosipins[multiplexChips]         = {11, 7, 3};
-const int   cspins[multiplexChips]           = {10, 6, 53};
+const int   cspins[multiplexChips]           = {10, 6, 44};
 const float sensorTreshold                   = 0.8;                                                              // Sensor treshold multiplier
 int         infraredMinimumTriggers          = 10;
 double      infraredSensitivity              = 0.9;
@@ -20,8 +20,8 @@ Leds ledStrip;
 const int ledCountTop    = 118;
 const int ledCountBottom = 114;
 
-//InfraredSensor sensorLeft( A1, descriptionLeft,  infraredMinimumTriggers, infraredAfterTriggerDelay, infraredSensitivity);
-//InfraredSensor sensorRight(A0, descriptionRight, infraredMinimumTriggers, infraredAfterTriggerDelay, infraredSensitivity);
+InfraredSensor sensorLeft( A1, descriptionLeft,  infraredMinimumTriggers, infraredAfterTriggerDelay, infraredSensitivity);
+InfraredSensor sensorRight(A0, descriptionRight, infraredMinimumTriggers, infraredAfterTriggerDelay, infraredSensitivity);
 
 boolean initialized = false;
 
@@ -54,13 +54,13 @@ void loop(){
    
   if(initialized){
   /*  if(!*/ledStrip.ledsLightSensors();//){
-//      left[0] = "null";
-//      left[1] = "-1";
-//      right[0] = "null";
-//      right[1] = "-1";
+      left[0] = "null";
+      left[1] = "-1";
+      right[0] = "null";
+      right[1] = "-1";
 //  
-//      sensorLeft.tick(left);
-//      sensorRight.tick(right);
+      sensorLeft.tick(left);
+      sensorRight.tick(right);
 //      if(left[0] == descriptionLeft){
 //        ledStrip.startGrind(false, millis(), left[1]);
 //      }
@@ -80,9 +80,9 @@ void loop(){
 //    
 //    if(incomingMessage == "Hi"){
 //      Serial.println(" -Initializing");
- //     sensorLeft.init();
- //     sensorRight.init();
- //   
+      sensorLeft.init();
+      sensorRight.init();
+      
       ledStrip.calibrateSensors();
       Serial.println('C'); // Trigger "Calibration done" sound.
       initialized = true;

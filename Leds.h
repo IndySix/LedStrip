@@ -34,7 +34,7 @@ class Leds{
     int mosi[3];
     int miso[3];
     int cs[3];
-    int ledStartupValue[16];
+    int ledStartupValue[20];
     int ledOnTime[20];
     int ledsTop;
     int ledsBottom;
