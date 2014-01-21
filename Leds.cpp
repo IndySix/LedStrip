@@ -6,23 +6,26 @@
 #include "Arduino.h"
 #include "Leds.h"
 #include "ADConverter.h"
-#include "Adafruit_NeoPixel.h"
-
-// Ledstrip data pin
-#define PIN 2
-
-// Declare a "strip" variable. Params: # of leds, data pin.
-Adafruit_NeoPixel strip  = Adafruit_NeoPixel(232, PIN, NEO_GRB + NEO_KHZ800);
-
-// Define a few colours
-uint32_t red   = strip.Color(255, 0, 0);
-uint32_t green = strip.Color(0, 255, 0);
-uint32_t blue  = strip.Color(0, 0, 255);
-uint32_t off   = strip.Color(0, 0, 0);
-uint32_t white = strip.Color(255, 255, 255);
+//#include <Wire.h>
+//#include <Adafruit_NeoPixel.h>
+//
+//// Ledstrip data pin
+//#define PIN 2
+//
+//// Declare a "strip" variable. Params: # of leds, data pin.
+//Adafruit_NeoPixel strip  = Adafruit_NeoPixel(232, PIN, NEO_GRB + NEO_KHZ800);
+//
+//// Define a few colours
+//uint32_t red   = strip.Color(255, 0, 0);
+//uint32_t green = strip.Color(0, 255, 0);
+//uint32_t blue  = strip.Color(0, 0, 255);
+//uint32_t off   = strip.Color(0, 0, 0);
+//uint32_t white = strip.Color(255, 255, 255);
 
 // Constructor
-Leds::Leds(){}
+Leds::Leds(){
+//  Wire.begin();
+}
 
 // Initialize the strip, pass along arrays of pin addresses etc.
 void Leds::init(const int ledCountTop,
@@ -36,15 +39,15 @@ void Leds::init(const int ledCountTop,
                 const int cspins[],
                 const float sensorTreshold){
   // "Start" the ledstrip
-  strip.begin();
-  
-  // Set all leds to red.
-  for (int i = 0; i < ledCountTop+ledCountBottom; i++){
-    strip.setPixelColor(i, red);
-  }
-  
-  // "Update" the strip
-  strip.show();
+//  strip.begin();
+//  
+//  // Set all leds to red.
+//  for (int i = 0; i < ledCountTop+ledCountBottom; i++){
+//    strip.setPixelColor(i, red);
+//  }
+//  
+//  // "Update" the strip
+//  strip.show();
   
 //  Serial.print(" -Leds: ");
 //  Serial.println(ledCountTop+ledCountBottom);
@@ -60,46 +63,51 @@ void Leds::init(const int ledCountTop,
 //  Serial.println(" -Setting default values.");
   ledDelay      = 5 * 1000; // Time in ms it takes before a activated led's switched off.
   lastActivated = -1;       // Last activated sensor ID.
-  
-  // Array to save activation timestamps of sensors
-  for(int i = 0; i < sensors; i++){
-    ledOnTime[i] = -1;
-  }
 
   ledsTop            = ledCountTop;
   ledsBottom         = ledCountBottom;
   sensors            = sensorCount;
   ledDistance        = ledSeparation;
   tresholdMultiplier = sensorTreshold;
+  grinding  = false;
+  
+  // Array to save activation timestamps of sensors
+  for(int i = 0; i < sensors; i++){
+    ledOnTime[i] = -1;
+  }
 
 //  Serial.println(" -Initialization Done");
 }
 
 boolean Leds::ledsLightSensors(){
 //  Serial.print(" -Light Sensor. Values: ");
+
+  if(!grinding){
+     return grinding;
+  }
+
   String output = "";
   for (int i = 0; i < sensors; i++)  {
-    
-    // Debug output
     int value = getSensorValue(i);
-    output += (String)value + "T" + (String)ledStartupValue[i] + "@" + (String)ledOnTime[i];
-    if(value < 10){
-      output+=", ";
-    }else{
-      output+=",";
-    }
+//    // Debug output
+//    output += (String)value;
+//    if(value < 10){
+//      output+=" ";
+//    }
+//    output += ":" + (String)ledStartupValue[i] + "." + (String)ledOnTime[i] + ", ";
     
     // If the strip was activated by a infrared sensor &&
     //    the currently active sensor hasn't been activated yet &&
     //    the currently active sensor follows the right direction || no sensors are activated yet.
-    if( //grinding &&
+    if( grinding &&
         ledOnTime[i] == -1 &&
-        value < ledStartupValue[i]// &&
-        //((grindDirection == i > lastActivated) ||
-        // lastActivated == -1)
+        value < ledStartupValue[i] &&
+        ((grindDirection == i > lastActivated) ||
+         lastActivated == -1)
       ){
       // Set led i to green
-      //setLed(i*2, 'g');
+      
+      setLed(i, 'g');
       //setLed(i*2+1, 'g');
       
       // Save the activation time of this sensor
@@ -107,13 +115,13 @@ boolean Leds::ledsLightSensors(){
       // save what sensor ID was last activated.
       lastActivated = i;
       
-      // Debug output
-      Serial.print("Led activated: ");
-      Serial.print(i);
-      Serial.print(" Value: ");
-      Serial.print(value);
-      Serial.print(" Tresold: ");
-      Serial.println(ledStartupValue[i]);
+//      // Debug output
+//      Serial.print("Led activated: ");
+//      Serial.print(i);
+//      Serial.print(" Value: ");
+//      Serial.print(value);
+//      Serial.print(" Tresold: ");
+//      Serial.println(ledStartupValue[i]);
       
       // Trigger "Led enabled" sound.
       Serial.print('T');
@@ -186,13 +194,13 @@ boolean Leds::ledsLightSensors(){
         
         // Combine the data into a json string
         jsonOut +=
-            "\"leds\":"           +          ledTimes                            +
-          ", \"distance\":"       + (String) distance                            +
-          ", \"duration\":"       + (String) duration                            +
-          ", \"velocity\":"       + (String) velocity                            +
-          ", \"percentage\":"     + (String) percentage                          +
-          ", \"direction\":"      + (String) (grindDirection ? "Right" : "Left") +
-          ", \"startDistance\":"  + (String) grindStartDistance                  ;
+            "\"leds\":"           +          ledTimes                                    +
+          ", \"distance\":"       + (String) distance                                    +
+          ", \"duration\":"       + (String) duration                                    +
+          ", \"velocity\":"       + (String) velocity                                    +
+          ", \"percentage\":"     + (String) percentage                                  +
+          ", \"direction\":"      + (String) (grindDirection ? "\"Right\"" : "\"Left\"") +
+          ", \"startDistance\":"  + (String) grindStartDistance                          ;
         
         // Output the grind data.
         Serial.println(jsonOut + "}");
@@ -204,11 +212,11 @@ boolean Leds::ledsLightSensors(){
     }
   }
   
-  // Update the strip.
-  strip.show();
+//  // Update the strip.
+//  strip.show();
   
-  // Debug output.
-  Serial.println(output);
+//  // Debug output.
+//  Serial.println(output);
   
   return grinding;
 }
@@ -220,56 +228,68 @@ void Leds::setLed(int n, char value){
   // Set led n to a colour.
   // Function has to be modified to pass a "uint32_t" colour, as they are defined above.
   // Maybe also with a rgb overload.
+  int r, g, b = 0;
   switch(value){
     case 'x':
-      strip.setPixelColor(n, off);
       break;
     case 'r':
-      strip.setPixelColor(n, red);
+      r = 255;
       break;
     case 'g':
-      strip.setPixelColor(n, green);
+      g = 255;
       break;
     case 'b':
-      strip.setPixelColor(n, blue);
+      b = 255;
       break;
   }
+//  for(int i = 0; i < 2; i++){
+//    Wire.beginTransmission(i);                 // Device ID
+//    Wire.write(i == 0 ? ledsTop : ledsBottom); // Pixels
+//    Wire.write(20);                            // Sensors
+//    Wire.write(n);                             // Activated Sensor
+//    Wire.write(r);                             // R
+//    Wire.write(g);                             // G
+//    Wire.write(b);                             // B
+//    Wire.endTransmission();
+//  }
 }
 
 void Leds::calibrateSensors(){
+//  // Debug output.
 //  Serial.println(" -Calibrating led sensors:");
   // Wait half a second.
   delay(500);
   int counter = 0;
   //
   for (int j = 0; j < sensors; j++){
-    delay(500);
+    delay(100);
     for (int i = 0; i < sensors; i++){
       ledStartupValue[i] += getSensorValue(i);
     }
-    for (int i = 0; i < ledsTop+ledsBottom; i++)  {
-      setLed(i, ((counter - i) % 3 == 0) ? 'g' : 'r');
-    }
-    strip.show();
+//    for (int i = 0; i < ledsTop+ledsBottom; i++)  {
+//      setLed(i, ((counter - i) % 3 == 0) ? 'g' : 'r');
+//    }
+//    strip.show();
     counter++;
   }
+//  Debug output
 //  Serial.print(" -");
   for (int i = 0; i < sensors; i++){
     ledStartupValue[i] = (ledStartupValue[i] / sensors) * tresholdMultiplier;
-    // Debug output
+//    // Debug output
 //    Serial.print(ledStartupValue[i]);
 //    Serial.print(" ");
   }
 
-  // "Calibration ready" flashing
-/*  for (int j = 0; j < sensors; j++)  {
-    for (int i = 0; i < ledsTop+ledsBottom; i++)  {
-      setLed(i, (j % 2 == 0) ? 'g' : 'r');
-    }
-    strip.show();
-    delay(50);
-  }*/
-  // Debug output
+//  // "Calibration ready" flashing
+//  for (int j = 0; j < sensors; j++)  {
+//    for (int i = 0; i < ledsTop+ledsBottom; i++)  {
+//      setLed(i, (j % 2 == 0) ? 'g' : 'r');
+//    }
+//    strip.show();
+//    delay(50);
+//  }
+//  // Debug output
 //  Serial.println("");
 }
 
@@ -285,6 +305,10 @@ void Leds::startGrind(boolean grindPositive, int startTime, String& startDistanc
 
 int Leds::getSensorValue(int sensorID){
   // Calculate chip number and sensor number on that chip, from the sensor ID.
+  if(sensorID == 18){
+     return 999; 
+  }
+  
   int chipNo = (int)(sensorID / 8);
   int sensorAddress = sensorID % 8;
   

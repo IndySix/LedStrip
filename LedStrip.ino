@@ -1,17 +1,18 @@
 #include "Leds.h"
 #include "InfraredSensor.h"
+#include <Wire.h>
 
-const int   ledsCount                        = 16;                                                               // Leds
-const int   ledSeparation                    = 10;                                                               // Distance between leds in CM
-const int   sensorCount                      = 20;                                                               // Sensors
+const int   ledsCount                        = 16;          // Leds
+const int   ledSeparation                    = 10;          // Distance between leds in CM
+const int   sensorCount                      = 20;          // Sensors
 const int   multiplexChips                   = 3;
 const int   clockpins[multiplexChips]        = {13, 9, 5};
 const int   misopins[multiplexChips]         = {12, 8, 4};
 const int   mosipins[multiplexChips]         = {11, 7, 3};
 const int   cspins[multiplexChips]           = {10, 6, 44};
-const float sensorTreshold                   = 0.8;                                                              // Sensor treshold multiplier
+const float sensorTreshold                   = 0.65;        // Sensor treshold multiplier
 int         infraredMinimumTriggers          = 10;
-double      infraredSensitivity              = 0.9;
+double      infraredSensitivity              = 0.8;
 int         infraredAfterTriggerDelay        = 1000;
 String      descriptionLeft                  = "Left";
 String      descriptionRight                 = "Right";
@@ -29,6 +30,8 @@ String left[2];
 String right[2];
 
 void setup(){
+  Serial.begin(9600);
+//      Serial.println(" -Setup");
   for(int i = 0; i < multiplexChips; i++){
     pinMode(clockpins[i], OUTPUT);
     pinMode(mosipins[i], OUTPUT);
@@ -46,14 +49,13 @@ void setup(){
                 misopins,
                 cspins,
                 sensorTreshold);
-  Serial.begin(9600);
 }
 
 void loop(){
 //   ledsKitt(1);
    
   if(initialized){
-  /*  if(!*/ledStrip.ledsLightSensors();//){
+    if(!ledStrip.ledsLightSensors()){
       left[0] = "null";
       left[1] = "-1";
       right[0] = "null";
@@ -61,13 +63,21 @@ void loop(){
 //  
       sensorLeft.tick(left);
       sensorRight.tick(right);
-//      if(left[0] == descriptionLeft){
-//        ledStrip.startGrind(false, millis(), left[1]);
-//      }
-//      if(right[0] == descriptionRight){
-//        ledStrip.startGrind(true, millis(), right[1]);
-//      }
-//    }
+      
+//      Serial.print(left[0]);
+//      Serial.print(' ');
+//      Serial.print(left[1]);
+//      Serial.print(' ');
+//      Serial.print(right[0]);
+//      Serial.print(' ');
+//      Serial.println(right[1]);
+      if(left[0] == descriptionLeft){
+        ledStrip.startGrind(false, millis(), left[1]);
+      }
+      if(right[0] == descriptionRight){
+        ledStrip.startGrind(true, millis(), right[1]);
+      }
+    }
 //    delay(1);
   }else{
 //    Serial.println("I'm the box!");
