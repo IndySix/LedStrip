@@ -69,7 +69,8 @@ void Leds::init(const int ledCountTop,
   sensors            = sensorCount;
   ledDistance        = ledSeparation;
   tresholdMultiplier = sensorTreshold;
-  grinding  = false;
+  grinding           = false;
+  infraredWorkaround = false;
   
   // Array to save activation timestamps of sensors
   for(int i = 0; i < sensors; i++){
@@ -82,9 +83,9 @@ void Leds::init(const int ledCountTop,
 boolean Leds::ledsLightSensors(){
 //  Serial.print(" -Light Sensor. Values: ");
 
-  if(!grinding){
-     return grinding;
-  }
+//  if(!grinding){
+//     return grinding;
+//  }
 
   String output = "";
   for (int i = 0; i < sensors; i++)  {
@@ -99,12 +100,33 @@ boolean Leds::ledsLightSensors(){
     // If the strip was activated by a infrared sensor &&
     //    the currently active sensor hasn't been activated yet &&
     //    the currently active sensor follows the right direction || no sensors are activated yet.
+    
+String temp = "0.0";
+    if( !grinding &&
+        ledOnTime[i] == -1 &&
+        value < ledStartupValue[i]){
+      ledOnTime[i] = millis();
+      lastActivated = i;
+      startGrind(false, millis(), temp);
+      infraredWorkaround = true;
+      Serial.println("AR");
+      Serial.print('T');
+      if(i < 10){
+        Serial.print('0');
+      }
+      Serial.println(i);
+    }
     if( grinding &&
         ledOnTime[i] == -1 &&
         value < ledStartupValue[i] &&
         ((grindDirection == i > lastActivated) ||
-         lastActivated == -1)
+         lastActivated == -1 ||
+         infraredWorkaround)
       ){
+        if(infraredWorkaround && lastActivated != -1){
+          grindDirection = (lastActivated > i);
+        }
+        
       // Set led i to green
       
       setLed(i, 'g');

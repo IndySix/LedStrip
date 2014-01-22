@@ -1,6 +1,9 @@
 LedStrip
 ========
 
+De [NeoPixel library](https://github.com/adafruit/Adafruit_NeoPixel/archive/master.zip) van Adafruit moet geïnstalleerd worden.  
+([Instructies](http://learn.adafruit.com/adafruit-all-about-arduino-libraries-install-use))
+
 Multiplex chip (A/D Converter)  
 [Connection](http://learn.adafruit.com/reading-a-analog-in-and-controlling-audio-volume-with-the-raspberry-pi/connecting-the-cobbler-to-a-mcp3008 "Connecting the Cobbler to a MCP3008")  
 [Script](http://learn.adafruit.com/reading-a-analog-in-and-controlling-audio-volume-with-the-raspberry-pi/script "Python Script")  

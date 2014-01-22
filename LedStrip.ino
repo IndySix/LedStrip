@@ -1,5 +1,5 @@
 #include "Leds.h"
-#include "InfraredSensor.h"
+//#include "InfraredSensor.h"
 #include <Wire.h>
 
 const int   ledsCount                        = 16;          // Leds
@@ -10,7 +10,7 @@ const int   clockpins[multiplexChips]        = {13, 9, 5};
 const int   misopins[multiplexChips]         = {12, 8, 4};
 const int   mosipins[multiplexChips]         = {11, 7, 3};
 const int   cspins[multiplexChips]           = {10, 6, 44};
-const float sensorTreshold                   = 0.65;        // Sensor treshold multiplier
+const float sensorTreshold                   = 0.3;        // Sensor treshold multiplier
 int         infraredMinimumTriggers          = 10;
 double      infraredSensitivity              = 0.8;
 int         infraredAfterTriggerDelay        = 1000;
@@ -21,8 +21,8 @@ Leds ledStrip;
 const int ledCountTop    = 118;
 const int ledCountBottom = 114;
 
-InfraredSensor sensorLeft( A1, descriptionLeft,  infraredMinimumTriggers, infraredAfterTriggerDelay, infraredSensitivity);
-InfraredSensor sensorRight(A0, descriptionRight, infraredMinimumTriggers, infraredAfterTriggerDelay, infraredSensitivity);
+//InfraredSensor sensorLeft( A1, descriptionLeft,  infraredMinimumTriggers, infraredAfterTriggerDelay, infraredSensitivity);
+//InfraredSensor sensorRight(A0, descriptionRight, infraredMinimumTriggers, infraredAfterTriggerDelay, infraredSensitivity);
 
 boolean initialized = false;
 
@@ -56,13 +56,13 @@ void loop(){
    
   if(initialized){
     if(!ledStrip.ledsLightSensors()){
-      left[0] = "null";
-      left[1] = "-1";
-      right[0] = "null";
-      right[1] = "-1";
+//      left[0] = "null";
+//      left[1] = "-1";
+//      right[0] = "null";
+//      right[1] = "-1";
 //  
-      sensorLeft.tick(left);
-      sensorRight.tick(right);
+//      sensorLeft.tick(left);
+//      sensorRight.tick(right);
       
 //      Serial.print(left[0]);
 //      Serial.print(' ');
@@ -71,12 +71,12 @@ void loop(){
 //      Serial.print(right[0]);
 //      Serial.print(' ');
 //      Serial.println(right[1]);
-      if(left[0] == descriptionLeft){
-        ledStrip.startGrind(false, millis(), left[1]);
-      }
-      if(right[0] == descriptionRight){
-        ledStrip.startGrind(true, millis(), right[1]);
-      }
+//      if(left[0] == descriptionLeft){
+//        ledStrip.startGrind(false, millis(), left[1]);
+//      }
+//      if(right[0] == descriptionRight){
+//        ledStrip.startGrind(true, millis(), right[1]);
+//      }
     }
 //    delay(1);
   }else{
@@ -90,8 +90,8 @@ void loop(){
 //    
 //    if(incomingMessage == "Hi"){
 //      Serial.println(" -Initializing");
-      sensorLeft.init();
-      sensorRight.init();
+//      sensorLeft.init();
+//      sensorRight.init();
       
       ledStrip.calibrateSensors();
       Serial.println('C'); // Trigger "Calibration done" sound.

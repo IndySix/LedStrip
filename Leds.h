@@ -26,6 +26,7 @@ class Leds{
     
   private:
     boolean logging;
+    boolean infraredWorkaround;
     
     void setLed(int n, char value);
     int getSensorValue(int sensorID);
