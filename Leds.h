@@ -10,14 +10,13 @@
 class Leds{
   public:
     Leds();
-    void init(const int ledCountTop,
-              const int ledCountBottom,
+    void init(const int ledCount,
               const int ledSeparation,
               const int sensorCount,
               const int multiplexChips,
-              const int clockpins[],
-              const int mosipins[],
-              const int misopins[],
+              const int clockpin,
+              const int mosipin,
+              const int misopin,
               const int cspins[],
               const float sensorTreshold);
     boolean ledsLightSensors();
@@ -28,19 +27,21 @@ class Leds{
     boolean logging;
     boolean infraredWorkaround;
     
-    void setLed(int n, char value);
+    void setLed(int n, uint32_t c);
+    void sensorActivated(int n, uint32_t c);
     int getSensorValue(int sensorID);
+    void buildOutput();
     
-    int clock[3];
-    int mosi[3];
-    int miso[3];
+    int clock;
+    int mosi;
+    int miso;
     int cs[3];
     int ledStartupValue[20];
     int ledOnTime[20];
-    int ledsTop;
-    int ledsBottom;
+    int leds;
     int sensors;
     int lastActivated;
+    int lastActivatedTime;
     int ledDelay;
     int ledDistance;
     float tresholdMultiplier;

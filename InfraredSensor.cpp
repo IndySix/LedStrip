@@ -38,7 +38,8 @@ int InfraredSensor::getValue(){
 
 void InfraredSensor::tick(String *output){
   int distance = getValue();
-      
+  
+  // Calculate average over last x readings
   total -= readings[ind];
   readings[ind] = distance;
   total += readings[ind];  
@@ -48,6 +49,7 @@ void InfraredSensor::tick(String *output){
   }
   average = total / numReadings;
 
+  // Deritmine if the sensor is triggered
   if (average > treshold){
     triggerCount++;
     if(triggerCount >= minimumTriggers && triggerTime + afterTriggerDelay < millis()){
@@ -67,6 +69,8 @@ void InfraredSensor::tick(String *output){
       Serial.print('A'); // Signal "Grind Activated"
       char suffix = (description == "Left")?'L':'R';
       Serial.println(suffix);
+      
+      // Reset some variables, set output
       triggerCount = 0;
       triggerTime = millis();
       output[0] = description;
